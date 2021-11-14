@@ -1,9 +1,79 @@
+# application/__init__.py
+
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
+from datetime import datetime
+from flask import jsonify, request
+from flask import Blueprint
+import requests
 # application/order_api/routes.py
 from flask import jsonify, request, make_response
-from . import order_api_blueprint
-from .. import db
-from ..models import Order, OrderItem
-from .api.UserClient import UserClient
+# application/models.py
+from datetime import datetime
+
+
+app = Flask(__name__)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+app.config['WTF_CSRF_ENABLED'] = False
+app.config.update(
+TESTING=True,
+SECRET_KEY='192b9bdd22ab9ed4d12e236c78afcb9a393ec15f71bbf5dc987d54727823bcbf'
+)
+db = SQLAlchemy()
+db.init_app(app)
+
+
+
+class Order(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer)
+    items = db.relationship('OrderItem', backref='orderItem')
+    is_open = db.Column(db.Boolean, default=True)
+    date_added = db.Column(db.DateTime, default=datetime.utcnow)
+    date_updated = db.Column(db.DateTime, onupdate=datetime.utcnow)
+
+    def create(self, user_id):
+        self.user_id = user_id
+        self.is_open = True
+        return self
+
+    def to_json(self):
+        items = []
+        for i in self.items:
+            items.append(i.to_json())
+
+        return {
+            'items': items,
+            'is_open': self.is_open,
+            'user_id': self.user_id
+        }
+
+
+class OrderItem(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    order_id = db.Column(db.Integer, db.ForeignKey('order.id'))
+    product_id = db.Column(db.Integer)
+    quantity = db.Column(db.Integer, default=1)
+    date_added = db.Column(db.DateTime, default=datetime.utcnow)
+    date_updated = db.Column(db.DateTime, onupdate=datetime.utcnow)
+
+    def __init__(self, product_id, quantity):
+        self.product_id = product_id
+        self.quantity = quantity
+
+    def to_json(self):
+        return {
+            'product': self.product_id,
+            'quantity': self.quantity
+        }
+        
+order_api_blueprint = Blueprint('order_api', __name__)
+
+
 
 
 @order_api_blueprint.route('/api/orders', methods=['GET'])
@@ -94,3 +164,29 @@ def checkout():
 
     response = jsonify({'result': order_model.to_json()})
     return response
+
+
+
+
+class UserClient:
+    @staticmethod
+    def get_user(api_key):
+        headers = {
+            'Authorization': api_key
+        }
+        response = requests.request(method="GET", url='http://192.168.0.106:5001/api/user', headers=headers)
+        if response.status_code == 401:
+            return False
+        user = response.json()
+        return user
+
+
+with app.app_context():
+    app.register_blueprint(order_api_blueprint)
+
+migrate = Migrate(app, db)
+
+
+if __name__ == '__main__':
+    
+    app.run(host='0.0.0.0', port=5003)

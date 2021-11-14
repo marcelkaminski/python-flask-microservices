@@ -9,7 +9,7 @@ class OrderClient:
         headers = {
             'Authorization': 'Basic ' + session['user_api_key']
         }
-        url = 'http://corder-service:5003/api/order'
+        url = 'http://192.168.0.106:5003/api/order'
         response = requests.request(method="GET", url=url, headers=headers)
         order = response.json()
         return order
@@ -20,7 +20,7 @@ class OrderClient:
             'product_id': product_id,
             'qty': qty
         }
-        url = 'http://corder-service:5003/api/order/add-item'
+        url = 'http://192.168.0.106:5003/api/order/add-item'
 
         headers = {
             'Authorization': 'Basic ' + session['user_api_key']
@@ -32,7 +32,7 @@ class OrderClient:
 
     @staticmethod
     def post_checkout():
-        url = 'http://corder-service:5003/api/order/checkout'
+        url = 'http://192.168.0.106:5003/api/order/checkout'
 
         headers = {
             'Authorization': 'Basic ' + session['user_api_key']
