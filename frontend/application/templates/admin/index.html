@@ -6,14 +6,17 @@
     <strong>{{ message }}</strong>
     <h1>Add Product</h1>
 
-    <div class="form-group">
-        <form action="" method=post enctype=multipart/form-data>
-            <input type="text" name="name">
-            <input type="text" name="slug">
-            <input type=file name=image>
-            <input type="number" name="price">
-            <input type=submit value=Upload>
-        </form>
-    </div>
 
+    <strong>{{ message }}</strong>
+    <!-- Product form -->
+    <form method="post">
+    {{ form.hidden_tag() }}
+    {{ render_field(form.name) }}
+    {{ render_field(form.slug) }}
+    {{ render_field(form.image) }}
+    {{ render_field(form.price) }}
+    {{ form.submit(class_="btn btn-success pull-right") }}
+
+
+    </form>
 {% endblock %}

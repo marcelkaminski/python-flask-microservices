@@ -139,3 +139,23 @@ def thank_you():
     flash('Thank you for your order', 'success')
 
     return render_template('order/thankyou.html')
+
+
+
+@frontend_blueprint.route('/admin', methods=['GET', 'POST'])
+def admin():
+    return render_template()
+
+@frontend_blueprint.route('/add_product', methods=['GET', 'POST'])
+def add_product():
+    form = forms.AddProductForm()
+    if request.method == "POST":
+        if form.validate_on_submit():
+            api_key = ProductClient.post_product(form)
+            if api_key:
+                return redirect(url_for('frontend.home'))
+            else:
+                flash('Cannot login', 'error')
+        else:
+            flash('Errors found', 'error')
+    return render_template('admin/index.html', form=form)

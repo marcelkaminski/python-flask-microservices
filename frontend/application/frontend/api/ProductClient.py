@@ -15,3 +15,15 @@ class ProductClient:
         response = requests.request(method="GET", url='http://192.168.0.106:5002/api/product/' + slug)
         product = response.json()
         return product
+
+    @staticmethod
+    def post_product(form):
+        payload = {
+        'name' : form.name.data,
+        'slug' : form.slug.data,
+        'image' : form.image.data,
+        'price' : form.price.data
+        }
+        url = 'http://192.168.0.106:5002/api/product/create'
+        requests.request("POST", url=url, data=payload)
+        return {"message":"Product has been added"}
