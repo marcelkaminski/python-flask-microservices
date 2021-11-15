@@ -1,15 +1,16 @@
 # application/frontend/views.py
 import requests
 from . import forms
+import os
 from . import frontend_blueprint
 from .. import login_manager
 from .api.UserClient import UserClient
 from .api.ProductClient import ProductClient
 from .api.OrderClient import OrderClient
 from flask import render_template, session, redirect, url_for, flash, request
+from werkzeug.utils import secure_filename
 
 from flask_login import current_user
-
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -146,16 +147,22 @@ def thank_you():
 def admin():
     return render_template()
 
+UPLOAD_FOLDER = 'application/static/images/'
+
 @frontend_blueprint.route('/add_product', methods=['GET', 'POST'])
 def add_product():
     form = forms.AddProductForm()
     if request.method == "POST":
         if form.validate_on_submit():
+            print(form.image.data)
+            filename = secure_filename(form.image.data.filename)
+            print(UPLOAD_FOLDER + filename)
+            form.image.data.save(UPLOAD_FOLDER + filename)
             api_key = ProductClient.post_product(form)
             if api_key:
                 return redirect(url_for('frontend.home'))
             else:
-                flash('Cannot login', 'error')
+                flash('Error', 'error')
         else:
-            flash('Errors found', 'error')
+            flash('Error', 'error')
     return render_template('admin/index.html', form=form)

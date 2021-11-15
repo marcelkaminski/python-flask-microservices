@@ -1,6 +1,6 @@
 # application/frontend/api/ProductClient.py
 import requests
-
+UPLOAD_FOLDER = 'application/static/images'
 
 class ProductClient:
 
@@ -21,7 +21,7 @@ class ProductClient:
         payload = {
         'name' : form.name.data,
         'slug' : form.slug.data,
-        'image' : form.image.data,
+        'image' : form.image.data.filename,
         'price' : form.price.data
         }
         url = 'http://192.168.0.106:5002/api/product/create'

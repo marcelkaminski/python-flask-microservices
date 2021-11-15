@@ -9,7 +9,7 @@
 
     <strong>{{ message }}</strong>
     <!-- Product form -->
-    <form method="post">
+    <form method="post" enctype="multipart/form-data">
     {{ form.hidden_tag() }}
     {{ render_field(form.name) }}
     {{ render_field(form.slug) }}

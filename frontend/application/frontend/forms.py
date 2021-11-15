@@ -1,6 +1,6 @@
 # application/frontend/forms.py
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, HiddenField, IntegerField, ImageField
+from wtforms import StringField, PasswordField, SubmitField, HiddenField, IntegerField, FileField
 
 from wtforms.validators import DataRequired, Email
 
@@ -39,6 +39,6 @@ class ProductForm(FlaskForm):
 class AddProductForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired()])
     slug = StringField('Slug', validators=[DataRequired()])
-    image = ImageField('Image', validators=[DataRequired()])
+    image = FileField('Image')
     price = IntegerField('Price', validators=[DataRequired()])
     submit = SubmitField('Add')
