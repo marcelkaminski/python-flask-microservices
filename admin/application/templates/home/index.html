@@ -1,0 +1,43 @@
+{% extends "base_col_1.html" %}
+{% block title %}Home Page{% endblock %}
+
+{% block pageContent %}
+{% if session['user'] %}
+{% if session['user']['is_admin'] %}
+{% if orders | length > 0 %}
+    {% for order in orders%}
+
+              
+<div class="col-md-4">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h2 class="panel-title">Order ID: {{order.id}} | User ID: {{order.user_id}}</h2>
+        </div>
+        <div class="panel-body">
+            {% for product in order['items']%}
+                Product ID: {{product.product}} Quantity: {{product.quantity}} <br/>
+            {% endfor %}
+        </div>
+        <div class="panel-footer">
+            <div class="container">
+            {% if not order.is_completed%}
+            <form action = "http://192.168.0.106:5003/api/order/complete/{{ order.id }}" method = "post">
+                <button class="btn btn-success">Complete order</button>
+            </form>
+            {%else%}
+                <a>Order completed</a>
+            {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+
+    {% else %}
+        <strong>No orders found.</strong>
+    {% endif %}
+{% endif %}
+{% endif %}
+
+{% endblock %}

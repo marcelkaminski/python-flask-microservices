@@ -33,6 +33,7 @@ class Order(db.Model):
     user_id = db.Column(db.Integer)
     items = db.relationship('OrderItem', backref='orderItem')
     is_open = db.Column(db.Boolean, default=True)
+    is_completed = db.Column(db.Boolean, default=False)
     date_added = db.Column(db.DateTime, default=datetime.utcnow)
     date_updated = db.Column(db.DateTime, onupdate=datetime.utcnow)
 
@@ -47,8 +48,10 @@ class Order(db.Model):
             items.append(i.to_json())
 
         return {
+            'id': self.id,
             'items': items,
             'is_open': self.is_open,
+            'is_completed': self.is_completed,
             'user_id': self.user_id
         }
 
@@ -165,7 +168,16 @@ def checkout():
     response = jsonify({'result': order_model.to_json()})
     return response
 
+@order_api_blueprint.route('/api/order/complete/<id>', methods=['POST'])
+def complete(id):
+    order_model = Order.query.filter_by(id=id).first()
+    order_model.is_completed = 1
 
+    db.session.add(order_model)
+    db.session.commit()
+
+    response = jsonify({'result': "Order Completed"})
+    return response
 
 
 class UserClient:
