@@ -48,3 +48,15 @@ class OrderClient:
             'total': 0,
         }
         return session.get('order', default_order)
+
+    def get_orders():
+        url = 'http://192.168.0.106:5003/api/orders'
+        response = requests.request(method="GET", url=url)
+        order = response.json()
+        return order
+
+    def complete_order():
+        url = 'http://192.168.0.106:5003/api/order/complete/id'
+        response = requests.request(method="POST", url=url)
+        order = response.json()
+        return order

@@ -28,6 +28,10 @@ def home():
         products = {
             'results': []
         }
+    except :
+        products = {
+            'results': []
+        }
 
     return render_template('home/index.html', products=products)
 
@@ -166,3 +170,13 @@ def add_product():
         else:
             flash('Error', 'error')
     return render_template('admin/index.html', form=form)
+
+@frontend_blueprint.route('/orders', methods=['GET'])
+def orders():
+    try:
+        orders = OrderClient.get_orders()
+    except requests.exceptions.ConnectionError:
+        orders = {
+            'results': []
+        }
+    return render_template('orders/index.html', orders=orders)
